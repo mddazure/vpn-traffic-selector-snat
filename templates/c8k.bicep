@@ -2,31 +2,13 @@ param ck8name string
 param vnetname string
 param insideSubnetid string
 param outsideSubnetid string
-param prefixId string
+param pubIpId string
 param udrName string
 param adminUsername string
 param adminPassword string
+param nsGId string
 
-resource pubip 'Microsoft.Network/publicIPAddresses@2020-11-01' = {
-  name: '${ck8name}-pubip'
-  location: resourceGroup().location
-  sku: {
-    name: 'Standard'
-    tier: 'Regional'    
-  }
-  zones: [
-    '1'
-    '2'
-    '3'
-  ]
-  properties: {
-  publicIPPrefix: {
-      id: prefixId
-    }
-   publicIPAllocationMethod: 'Static'
-   publicIPAddressVersion: 'IPv4'
-  }
-}
+
 resource insidenic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${ck8name}-insidenic'
   location: resourceGroup().location
@@ -49,6 +31,9 @@ resource outsidenic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${ck8name}-outsidenic'
   location: resourceGroup().location
   properties: {
+    networkSecurityGroup: {
+      id: nsGId
+    }
     ipConfigurations: [
       {
         name: 'ipconfig'
@@ -57,7 +42,7 @@ resource outsidenic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
             id: outsideSubnetid
           }
           publicIPAddress: {
-            id: pubip.id
+            id: pubIpId
           }
           primary: true
           privateIPAllocationMethod: 'Dynamic'

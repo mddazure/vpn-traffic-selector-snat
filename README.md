@@ -24,15 +24,38 @@ Service provider requires all traffic from the customer to be SNAT'd to 40.40.40
 
 The service provider requires a narrow Traffic Selector of 40.40.40.1 < - > 10.10.0.0/16.
 
-### Deployment
+### Deploy
+Log in to Azure Cloud Shell at https://shell.azure.com/ and select Bash.
 
+Ensure Azure CLI and extensions are up to date:
+  
+      az upgrade --yes
+  
+If necessary select your target subscription:
+  
+      az account set --subscription <Name or ID of subscription>
+  
+Clone the  GitHub repository:
 
+      git clone https://github.com/mddazure/vpn-traffic-selector-snat
 
+Change directory:
 
+      cd ./vpn-traffic-selector-snat
+
+Accept the terms for the CSR8000v Marketplace offer:
+
+      az vm image terms accept -p cisco -f cisco-c8000v-byol --plan 17_15_01a-byol -o none
+
+Deploy the Bicep template:
+
+      az deployment sub create --location swedencentral --template-file templates/main.bicep
+
+Verify that all components in the diagram above have been deployed to the resourcegroup `vpn-rg` and are healthy.
 
 ### Router configuration
 
-The configuration if the left-hand router consists of:
+The configuration of the left-hand router consists of:
 
 - IKEv2 and IPSec policies, profiles and transform: 
 

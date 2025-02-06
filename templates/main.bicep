@@ -1,5 +1,5 @@
 param location string = 'swedencentral'
-param rgname string = 'vpn-rg'
+param rgname string = 'vpn-rg5'
 param customerVnetName string = 'customerVnet'
 param customerVnetIPrange string = '10.0.0.0/16'
 param customerOutsideSubnetIPrange string = '10.0.0.0/24'
@@ -47,9 +47,13 @@ module providerVnet 'vnet.bicep' = {
     vmSubnetIPrange: providerVmSubnetIPrange
   }
 }
-module prefix 'prefix.bicep' = {
-  name: 'prefix'
+module outsideNsg 'nsg.bicep' = {
+  name: 'outsideNsg'
   scope: rg
+  params: {
+    customerPip: customerVnet.outputs.pubIp
+    providerPip: providerVnet.outputs.pubIp
+  }
 }
 module customerVm 'vm.bicep' = {
   name: 'customerVm'
@@ -80,7 +84,8 @@ module customerC8k 'c8k.bicep' = {
     vnetname: customerVnet.outputs.vnetId
     insideSubnetid: customerVnet.outputs.insideSubnetId
     outsideSubnetid: customerVnet.outputs.outsideSubnetId
-    prefixId: prefix.outputs.prefixId
+    nsGId: outsideNsg.outputs.nsgId
+    pubIpId: customerVnet.outputs.pubipId
     udrName: customerVnet.outputs.udrName
     adminUsername: adminUsername
     adminPassword: adminPassword
@@ -94,9 +99,11 @@ module providerC8k 'c8k.bicep' = {
     vnetname: providerVnet.outputs.vnetId
     insideSubnetid: providerVnet.outputs.insideSubnetId
     outsideSubnetid: providerVnet.outputs.outsideSubnetId
-    prefixId: prefix.outputs.prefixId
+    nsGId: outsideNsg.outputs.nsgId
+    pubIpId: providerVnet.outputs.pubipId
     udrName: providerVnet.outputs.udrName
     adminUsername: adminUsername
     adminPassword: adminPassword
   }
 }
+
