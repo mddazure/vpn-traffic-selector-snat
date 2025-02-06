@@ -1,10 +1,10 @@
-**VPN with Source NAT and Traffic Selector**
+# VPN with Source NAT and Traffic Selector
 
-Some providers of IT services require their customers to conenct via VPN tunnels. 
+Some providers of IT services require their customers to connect via VPN tunnels. 
 
 These service providers will usually require their customers to Source NAT to - i.e. hide themselves behind - an IP address from a range they control. This ensures that all customers come in to the provider's environment from unique IP addresses. Providers may also require a custom Traffic Selector matching the Source NAT address, effectively turning the connection into a policy-based rather than a route-based VPN.
 
-Although VPN is an outdated and cumbersome method of connecting to a central service, it is still used in some application fields such as with government agencies, regulatory bodies, tax authorities etc. Customers have no other option than to comply if they want or need to use these provider's services.
+Although VPN is an outdated and cumbersome method of connecting to a central service, it is still used in some application fields such as in financial services,  with government agencies, regulatory bodies, tax authorities etc. Customers have no other option than to comply if they want or need to use these provider's services.
 
 Azure customers will usually first attempt to use Azure-native VNET or VWAN VPN Gateways. These Gateways have NAT capabilities, but do ***not*** support NAT in combination with custom (policy-based) Traffic Selectors. When this combination is required, the only solution is to use a Network Virtual Appliance (NVA).
 
@@ -14,12 +14,25 @@ See [Comparing Cisco VPN Technologies – Policy Based vs Route Based VPNs](http
 
 This article describes how use the Cisco Catalyst 8000V Edge Software in Azure to build a VPN solution that supports both Source NAT and custom Traffic Selectors.
 
-# Lab
+## Lab
 The lab consists of two VNETs, each containing a VM and Cisco 8000V NVA. 
 
 ![image](/inexto.png)
 
-The NVA configuration consists of:
+The left-hand VNET is the customer's environment, the right-hand VNET represents the service provider. 
+Service provider requires all traffic from the customer to be SNAT'd to 40.40.40.1. The service provider's destination systems are in the 10.10.0.0/16 range. Traffic direction is from customer to service provider only, i.e. the service provider will not need to connect to customer's systems.
+
+The service provider requires a narrow Traffic Selector of 40.40.40.1 < - > 10.10.0.0/16.
+
+### Deployment
+
+
+
+
+
+### Router configuration
+
+The configuration if the left-hand router consists of:
 
 - IKEv2 and IPSec policies, profiles and transform: 
 
@@ -40,6 +53,7 @@ crypto ikev2 keyring IKEv2-KEYRING-TNTAZ
 crypto ikev2 profile IKEv2-PROFILE-TNTAZ
  match identity remote address 20.91.130.234 255.255.255.255 
  match identity remote address 10.10.0.4 255.255.255.255 
+ !<When the remote router is in Azure, use the outside interface's private address !here. When the remote router is has a public address directly on the outside !interface, use the public address here> 
  authentication remote pre-share
  authentication local pre-share
  keyring local IKEv2-KEYRING-TNTAZ
@@ -106,3 +120,7 @@ interface GigabitEthernet2
 Traffic received on the LAN interface is compared to the access-list. If it matches, the source address is replaced as defined in the NAT pool.
 
 The replaced source address then matches the access list attached to the crypto map, so it sent down the encrypted connection.
+
+The right-hand router is configured similarly, with following differences:
+- It does not contain NAT configuration
+- The access list linked to the crypto map, which controls the Traffic Selector, has source and destination reversed.
