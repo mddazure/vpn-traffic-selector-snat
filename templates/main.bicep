@@ -1,5 +1,5 @@
 param location string = 'swedencentral'
-param rgname string = 'vpn-rg5'
+param rgname string = 'vpn-lab-rg'
 param customerVnetName string = 'customerVnet'
 param customerVnetIPrange string = '10.0.0.0/16'
 param customerOutsideSubnetIPrange string = '10.0.0.0/24'
