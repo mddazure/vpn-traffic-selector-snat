@@ -38,6 +38,7 @@ resource insidenic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
           subnet: {
             id: insideSubnetid
           }
+          primary: true
           privateIPAllocationMethod: 'Dynamic'
         }
       }
@@ -45,7 +46,7 @@ resource insidenic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   }
 }
 resource outsidenic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: '${ck8name}-outnic'
+  name: '${ck8name}-outsidenic'
   location: resourceGroup().location
   properties: {
     ipConfigurations: [
@@ -55,6 +56,10 @@ resource outsidenic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
           subnet: {
             id: outsideSubnetid
           }
+          publicIPAddress: {
+            id: pubip.id
+          }
+          primary: true
           privateIPAllocationMethod: 'Dynamic'
         }
       }
@@ -64,6 +69,11 @@ resource outsidenic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
 resource ck8 'Microsoft.Compute/virtualMachines@2020-06-01' = {
   name: ck8name
   location: resourceGroup().location
+  plan: {
+    publisher: 'cisco'
+    name: '17_15_01a-byol'
+    product: 'cisco-c8000v-byol'
+  }
   properties: {
     hardwareProfile: {
       vmSize: 'Standard_D2as_v5'
@@ -91,9 +101,15 @@ resource ck8 'Microsoft.Compute/virtualMachines@2020-06-01' = {
       networkInterfaces: [
         {
           id: insidenic.id
+          properties: {
+            primary: false
+          }
         }
         {
           id: outsidenic.id
+          properties: {
+            primary: true
+          }
         }
       ]
     }
@@ -101,6 +117,9 @@ resource ck8 'Microsoft.Compute/virtualMachines@2020-06-01' = {
 }
 resource route 'Microsoft.Network/routeTables/routes@2020-11-01' = {
   name: '${udrName}/route1'
+  dependsOn: [
+    ck8
+  ]
   properties: {
     addressPrefix: '10.0.0.0/8'
           nextHopType: 'VirtualAppliance'

@@ -54,6 +54,7 @@ module prefix 'prefix.bicep' = {
 module customerVm 'vm.bicep' = {
   name: 'customerVm'
   scope: rg
+
   params: {
     vmname: customerVmName
     subnetId: customerVnet.outputs.vmSubnetId
@@ -98,4 +99,4 @@ module providerC8k 'c8k.bicep' = {
     adminUsername: adminUsername
     adminPassword: adminPassword
   }
-} 
+}

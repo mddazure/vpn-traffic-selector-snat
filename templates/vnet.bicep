@@ -5,7 +5,7 @@ param insideSubnetIPrange string
 param vmSubnetIPrange string
 
 
-resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
   name: vnetname
   location: resourceGroup().location
   properties: {
@@ -16,22 +16,28 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = {
     }
   }
 }
-resource outsideSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+resource outsideSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-05-01' = {
   parent: vnet
   name: 'outside'
   properties: {
     addressPrefix: outsideSubnetIPrange
   }
 }
-resource insideSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+resource insideSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-05-01' = {
   parent: vnet
   name: 'inside'
+  dependsOn: [
+    outsideSubnet
+  ]
   properties: {
     addressPrefix: insideSubnetIPrange
   }
 }
-resource vmSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+resource vmSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-05-01' = {
   parent: vnet
+  dependsOn: [
+    insideSubnet
+  ]
   name: 'vm'
   properties: {
     addressPrefix: vmSubnetIPrange
