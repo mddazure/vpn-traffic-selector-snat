@@ -53,9 +53,59 @@ Deploy the Bicep template:
 
 Verify that all components in the diagram above have been deployed to the resourcegroup `vpn-rg` and are healthy.
 
-### Router configuration
+Use Serial Console from the Azure portal, under Help in the left hand menu of the Virtual machine blade, to log on to the VMs and Cisco 8000Vs.
 
-The configuration of the left-hand router consists of:
+Credentials :
+
+Username: `AzureAdmin`
+
+Password: `vpn@123456`
+
+### Cisco 8000V set-up
+
+#### Configuration
+
+On both Cisco 8000V's:
+
+- Connect via Serial Console and log in.
+
+- Enter Enable mode by typing `en` at the prompt, then enter Configuration mode by typing `conf t`. Paste in the below commands:
+
+      license boot level network-advantage addon dna-advantage
+      do wr mem
+      do reload
+
+- The device will now reboot; when completed log in, en Enable mode and Configuration mode again.
+
+Retrieve the public ip's of both Cisco 8000V's:
+
+- `c8k-0` (left hand):
+  
+   ```
+   az network public-ip show --resource-group vpn-lab-rg --name c8k-0-pip --query ipAddress
+   ```
+
+- c8k-10 (right hand): 
+
+  ```
+  az network public-ip show --resource-group vpn-lab-rg --name c8k-0-pip --query ipAddress
+  ```
+
+Open the file [c8k-0-snat.ios](/c8k-0-snat.ios) in a text editor.
+
+- Replace `[c8k-10-pip]` by the public ip address of c8k-10.
+
+Copy the configuration into `c8k-0`.
+
+Open the file [c8k-10-snat.ios](/c8k-10-snat.ios) in a text editor.
+
+- Replace `[c8k-10-pip]` by the public ip address of c8k-0.
+
+Copy the configuration into `c8k-10`.
+
+#### Explanation
+
+The configuration of the left-hand Cisco 8000V, named c8k-0, consists of:
 
 - IKEv2 and IPSec policies, profiles and transform: 
 
@@ -74,7 +124,7 @@ crypto ikev2 keyring IKEv2-KEYRING-TNTAZ
   pre-shared-key abc123
 !
 crypto ikev2 profile IKEv2-PROFILE-TNTAZ
- match identity remote address 20.91.130.234 255.255.255.255 
+ match identity remote address > 255.255.255.255 
  match identity remote address 10.10.0.4 255.255.255.255 
  !<When the remote router is in Azure, use the outside interface's private address !here. When the remote router is has a public address directly on the outside !interface, use the public address here> 
  authentication remote pre-share

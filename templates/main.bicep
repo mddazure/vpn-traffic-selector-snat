@@ -1,19 +1,21 @@
 param location string = 'swedencentral'
-param rgname string = 'vpn-lab-rg'
-param customerVnetName string = 'customerVnet'
+param rgname string = 'vpn-lab-rg2'
+param customerVnetName string = 'client-Vnet'
 param customerVnetIPrange string = '10.0.0.0/16'
 param customerOutsideSubnetIPrange string = '10.0.0.0/24'
 param customerInsideSubnetIPrange string = '10.0.1.0/24'
 param customerVmSubnetIPrange string = '10.0.2.0/24'
-param customerVmName string = 'customerVm'
-param customerC8kName string = 'customerC8k'
-param providerVnetName string = 'providerVnet'
+param customerVmName string = 'client-Vm'
+param customerC8kName string = 'c8k-0'
+param customerPipName string = 'c8k-0-pip'
+param providerVnetName string = 'provider-Vnet'
 param providerVnetIPrange string = '10.10.0.0/16'
 param providerOutsideSubnetIPrange string = '10.10.0.0/24'
 param providerInsideSubnetIPrange string = '10.10.1.0/24'
 param providerVmSubnetIPrange string = '10.10.2.0/24'
-param providerVmName string = 'providerVm'
-param providerC8kName string = 'providerC8k'
+param providerVmName string = 'provider-Vm'
+param providerC8kName string = 'c8k-10'
+param providerPipName string = 'c8k-10-pip'
 
 param adminUsername string = 'AzureAdmin'
 param adminPassword string = 'vpn@123456'
@@ -34,6 +36,7 @@ module customerVnet 'vnet.bicep' = {
     outsideSubnetIPrange: customerOutsideSubnetIPrange
     insideSubnetIPrange: customerInsideSubnetIPrange
     vmSubnetIPrange: customerVmSubnetIPrange
+    c8kpipName: customerPipName
   }
 }
 module providerVnet 'vnet.bicep' = {
@@ -45,6 +48,7 @@ module providerVnet 'vnet.bicep' = {
     outsideSubnetIPrange: providerOutsideSubnetIPrange
     insideSubnetIPrange: providerInsideSubnetIPrange
     vmSubnetIPrange: providerVmSubnetIPrange
+    c8kpipName: providerPipName
   }
 }
 module outsideNsg 'nsg.bicep' = {

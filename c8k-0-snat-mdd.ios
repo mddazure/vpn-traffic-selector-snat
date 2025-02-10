@@ -9,13 +9,13 @@ crypto ikev2 policy IKEv2-POLICY-TNTAZ
 !
 crypto ikev2 keyring IKEv2-KEYRING-TNTAZ
  peer TNTAZ
-  address [c8k-10-pip]
+  address 51.12.84.72
   pre-shared-key abc123
  !
 !
 !
 crypto ikev2 profile IKEv2-PROFILE-TNTAZ
- match identity remote address [c8k-10-pip] 255.255.255.255
+ match identity remote address 51.12.84.72 255.255.255.255
  match identity remote address 10.10.0.4 255.255.255.255 
  authentication remote pre-share
  authentication local pre-share
@@ -29,7 +29,7 @@ crypto ipsec profile IPSEC-PROFILE-TNTAZ
  set pfs group14
 !         
 crypto map cmap 1 ipsec-isakmp 
- set peer [c8k-10-pip]
+ set peer 51.12.84.72
  set transform-set IPSEC-TRANSFORM-TNTAZ 
  set ikev2-profile IKEv2-PROFILE-TNTAZ
  match address tntazlist
@@ -42,6 +42,7 @@ interface GigabitEthernet1
 !
 interface GigabitEthernet2
  ip address dhcp
+ no shut
  ip nat inside
  negotiation auto
 !

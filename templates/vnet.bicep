@@ -3,6 +3,7 @@ param vnetIPrange string
 param outsideSubnetIPrange string
 param insideSubnetIPrange string
 param vmSubnetIPrange string
+param c8kpipName string
 
 
 resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
@@ -58,7 +59,7 @@ resource prefix 'Microsoft.Network/publicIPPrefixes@2020-11-01' = {
   }
 }
 resource pubip 'Microsoft.Network/publicIPAddresses@2020-11-01' = {
-  name: '${vnetname}-pubip'
+  name: c8kpipName
   location: resourceGroup().location
   sku: {
     name: 'Standard'

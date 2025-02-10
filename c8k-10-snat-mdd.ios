@@ -9,14 +9,13 @@ crypto ikev2 policy IKEv2-POLICY-TNTAZ
 !
 crypto ikev2 keyring IKEv2-KEYRING-TNTAZ
  peer TNTAZ
-  address [c8k-10-pip]
+  address 51.12.85.152
   pre-shared-key abc123
- !
 !
-!
+
 crypto ikev2 profile IKEv2-PROFILE-TNTAZ
- match identity remote address [c8k-10-pip] 255.255.255.255
- match identity remote address 10.10.0.4 255.255.255.255 
+ match identity remote address 51.12.85.152 255.255.255.255 
+ match identity remote address 10.0.0.4 255.255.255.255 
  authentication remote pre-share
  authentication local pre-share
  keyring local IKEv2-KEYRING-TNTAZ
@@ -27,9 +26,9 @@ crypto ipsec transform-set IPSEC-TRANSFORM-TNTAZ esp-aes 256 esp-sha256-hmac
 crypto ipsec profile IPSEC-PROFILE-TNTAZ
  set transform-set IPSEC-TRANSFORM-TNTAZ 
  set pfs group14
-!         
+!        
 crypto map cmap 1 ipsec-isakmp 
- set peer [c8k-10-pip]
+ set peer 51.12.85.152
  set transform-set IPSEC-TRANSFORM-TNTAZ 
  set ikev2-profile IKEv2-PROFILE-TNTAZ
  match address tntazlist
@@ -42,21 +41,13 @@ interface GigabitEthernet1
 !
 interface GigabitEthernet2
  ip address dhcp
- ip nat inside
+ no shut
  negotiation auto
 !
-ip http server
-ip http secure-server
-ip route 0.0.0.0 0.0.0.0 10.0.0.1
-ip route 10.0.2.0 255.255.255.0 GigabitEthernet2 10.0.1.1
+ip route 0.0.0.0 0.0.0.0 10.10.0.1
+ip route 10.10.2.0 255.255.255.0 GigabitEthernet2 10.10.1.1
 !
-ip nat pool snat-pool 40.40.40.1 40.40.40.1 prefix-length 30
-ip nat inside source list snat-inside pool snat-pool
-!
-ip access-list extended snat-inside
- 10 permit ip 10.0.2.0 0.0.0.255 any
- 20 deny ip any any
 ip access-list extended tntazlist
- 10 permit ip 10.0.0.0 0.0.255.255 10.10.0.0 0.0.255.255
- 20 permit ip host 40.40.40.1 10.10.0.0 0.0.255.255
+ 10 permit ip 10.10.0.0 0.0.255.255 10.0.0.0 0.0.255.255
+ 20 permit ip 10.10.0.0 0.0.255.255 host 40.40.40.1
 !
