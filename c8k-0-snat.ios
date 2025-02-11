@@ -34,12 +34,6 @@ crypto map cmap 1 ipsec-isakmp
  set ikev2-profile IKEv2-PROFILE-TNTAZ
  match address tntazlist
 !
-interface GigabitEthernet1
- ip address dhcp
- ip nat outside
- negotiation auto
- crypto map cmap
-!
 interface GigabitEthernet2
  ip address dhcp
  ip nat inside
@@ -60,3 +54,9 @@ ip access-list extended tntazlist
  10 permit ip 10.0.0.0 0.0.255.255 10.10.0.0 0.0.255.255
  20 permit ip host 40.40.40.1 10.10.0.0 0.0.255.255
 !
+!
+interface GigabitEthernet1
+ ip address dhcp
+ ip nat outside
+ negotiation auto
+ crypto map cmap
