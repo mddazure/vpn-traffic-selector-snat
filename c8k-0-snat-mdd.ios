@@ -15,7 +15,7 @@ crypto ikev2 keyring IKEv2-KEYRING-TNTAZ
 !
 !
 crypto ikev2 profile IKEv2-PROFILE-TNTAZ
- match identity remote address 51.12.84.72 255.255.255.255
+ match identity remote address 20.91.234.112255.255.255.255
  match identity remote address 10.10.0.4 255.255.255.255 
  authentication remote pre-share
  authentication local pre-share

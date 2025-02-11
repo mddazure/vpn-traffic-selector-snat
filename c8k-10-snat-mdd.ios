@@ -9,12 +9,12 @@ crypto ikev2 policy IKEv2-POLICY-TNTAZ
 !
 crypto ikev2 keyring IKEv2-KEYRING-TNTAZ
  peer TNTAZ
-  address 51.12.85.152
+  address 20.91.237.200
   pre-shared-key abc123
 !
 
 crypto ikev2 profile IKEv2-PROFILE-TNTAZ
- match identity remote address 51.12.85.152 255.255.255.255 
+ match identity remote address 20.91.237.200 255.255.255.255 
  match identity remote address 10.0.0.4 255.255.255.255 
  authentication remote pre-share
  authentication local pre-share
@@ -28,7 +28,7 @@ crypto ipsec profile IPSEC-PROFILE-TNTAZ
  set pfs group14
 !        
 crypto map cmap 1 ipsec-isakmp 
- set peer 51.12.85.152
+ set peer 20.91.237.200
  set transform-set IPSEC-TRANSFORM-TNTAZ 
  set ikev2-profile IKEv2-PROFILE-TNTAZ
  match address tntazlist
