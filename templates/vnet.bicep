@@ -4,7 +4,7 @@ param outsideSubnetIPrange string
 param insideSubnetIPrange string
 param vmSubnetIPrange string
 param c8kpipName string
-
+param prefixId string
 
 resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
   name: vnetname
@@ -47,17 +47,6 @@ resource vmSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-05-01' = {
     }
   }
 }
-resource prefix 'Microsoft.Network/publicIPPrefixes@2020-11-01' = {
-  name: '${vnetname}-prefix'
-  location: resourceGroup().location
-  sku: {
-    name: 'Standard'
-    tier: 'Regional'
-  }
-  properties: {
-    prefixLength: 29
-  }
-}
 resource pubip 'Microsoft.Network/publicIPAddresses@2020-11-01' = {
   name: c8kpipName
   location: resourceGroup().location
@@ -72,7 +61,7 @@ resource pubip 'Microsoft.Network/publicIPAddresses@2020-11-01' = {
   ]
   properties: {
   publicIPPrefix: {
-      id: prefix.id
+      id: prefixId
     }
    publicIPAllocationMethod: 'Static'
    publicIPAddressVersion: 'IPv4'

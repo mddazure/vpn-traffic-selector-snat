@@ -1,5 +1,5 @@
 param location string = 'swedencentral'
-param rgname string = 'vpn-lab-rg2'
+param rgname string = 'vpn-lab-rg'
 param customerVnetName string = 'client-Vnet'
 param customerVnetIPrange string = '10.0.0.0/16'
 param customerOutsideSubnetIPrange string = '10.0.0.0/24'
@@ -27,6 +27,12 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: rgname
   location: location
 }
+
+module prefix 'prefix.bicep' = {
+  name: 'prefix'
+  scope: rg
+}
+
 module customerVnet 'vnet.bicep' = {
   name: 'customerVnet'
   scope: rg
@@ -36,6 +42,7 @@ module customerVnet 'vnet.bicep' = {
     outsideSubnetIPrange: customerOutsideSubnetIPrange
     insideSubnetIPrange: customerInsideSubnetIPrange
     vmSubnetIPrange: customerVmSubnetIPrange
+    prefixId: prefix.outputs.prefixId
     c8kpipName: customerPipName
   }
 }
@@ -49,6 +56,7 @@ module providerVnet 'vnet.bicep' = {
     insideSubnetIPrange: providerInsideSubnetIPrange
     vmSubnetIPrange: providerVmSubnetIPrange
     c8kpipName: providerPipName
+    prefixId: prefix.outputs.prefixId
   }
 }
 module outsideNsg 'nsg.bicep' = {
