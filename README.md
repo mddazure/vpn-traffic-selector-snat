@@ -51,7 +51,7 @@ Deploy the Bicep template:
 
       az deployment sub create --location swedencentral --template-file templates/main.bicep
 
-Verify that all components in the diagram above have been deployed to the resourcegroup `vpn-rg` and are healthy.
+Verify that all components in the diagram above have been deployed to the resourcegroup `vpn-lab-rg` and are healthy.
 
 Use Serial Console from the Azure portal, under Help in the left hand menu of the Virtual machine blade, to log on to the VMs and Cisco 8000Vs.
 
@@ -75,7 +75,7 @@ On both Cisco 8000V's:
       do wr mem
       do reload
 
-- The device will now reboot; when completed log in, en Enable mode and Configuration mode again.
+- The device will now reboot; when completed log in, enter Enable mode and Configuration mode again.
 
 Retrieve the public ip's of both Cisco 8000V's:
 
@@ -93,23 +93,23 @@ Retrieve the public ip's of both Cisco 8000V's:
 
 Open the file [c8k-0-snat.ios](/c8k-0-snat.ios) in a text editor.
 
-- Replace `[c8k-10-pip]` by the public ip address of c8k-10.
+- Replace `[c8k-10-pip]` by the public ip address of `c8k-10`.
 
-- Connect to c8k-0 via Serial Console and log in.
+- Connect to `c8k-0` via Serial Console and log in.
 
 - Enter Enable mode by typing `en` at the prompt, then enter Configuration mode by typing `conf t`. Copy the configuration into `c8k-0`.
   
-- Type `end` to exit Configuration mode, type `copy run start` and accept defaults to store the running configuration.
+- Type `end` to exit Configuration mode, type `copy run start` and accept defaults to persist the running configuration.
 
 Open the file [c8k-10-snat.ios](/c8k-10-snat.ios) in a text editor.
 
-- Replace `[c8k-10-pip]` by the public ip address of c8k-0.
+- Replace `[c8k-10-pip]` by the public ip address of `c8k-0`.
 
 - Connect to `c8k-10` via Serial Console and log in.
 
 - Enter Enable mode by typing `en` at the prompt, then enter Configuration mode by typing `conf t`. Copy the configuration into `c8k-10`.
 
-- Type `end` to exit Configuration mode, type `copy run start` and accept defaults to store the running configuration.
+- Type `end` to exit Configuration mode, type `copy run start` and accept defaults to persist the running configuration.
 
 #### Explanation
 
@@ -132,9 +132,12 @@ crypto ikev2 keyring IKEv2-KEYRING-TNTAZ
   pre-shared-key abc123
 !
 crypto ikev2 profile IKEv2-PROFILE-TNTAZ
- match identity remote address > 255.255.255.255 
+ match identity remote address <remote router pip> 255.255.255.255 
  match identity remote address 10.10.0.4 255.255.255.255 
- !<When the remote router is in Azure, use its outside interface's private address !here. When the remote router has a public address directly on the outside interface, use its public address here> 
+ ! When the remote router is in Azure, use its
+ ! outside interface's private address here. 
+ ! When the remote router has a !public address directly on the outside 
+ ! interface, use its public address here
  authentication remote pre-share
  authentication local pre-share
  keyring local IKEv2-KEYRING-TNTAZ
@@ -156,19 +159,9 @@ crypto map cmap 1 ipsec-isakmp
  set ikev2-profile IKEv2-PROFILE-TNTAZ
  match address tntazlist
  ```
- This is the main difference between a policy based and a route-based VPN. In a route based VPN, the encrypted connection is represented as Virtual Tunnel Interface (VTI) that can be referenced in routes and will appear in the routing table. In the background, not visible in the configuration, this results in a 0.0.0.0/0 to 0.0.0.0/0 (any-to-any) Traffic Selector exchanged during the IKEv2 Phase 2 negotiation.
+ This is the main difference between a policy based and a route-based VPN. In a route based VPN, the encrypted connection is represented as a Virtual Tunnel Interface (VTI) that can be referenced in routes and will appear in the routing table. In the background, not visible in the configuration, this results in a 0.0.0.0/0 to 0.0.0.0/0 (any-to-any) Traffic Selector exchanged during the IKEv2 Phase 2 negotiation.
 
  In a policy-based VPN, the access-list referenced by the Crypto map determines which traffic is sent down the encrypted connection. There is no Virtual Tunnel Interface to reference in the routing table, traffic qualifying for encryption traffic bypasses the routing process. The Crypto map configuration results in an exchange of Traffic Selectors as specified in the access list.
-
-- The Crypto map is attached to the outside interface of the router:
-
-```
-interface GigabitEthernet1
- ip address dhcp
- ip nat outside
- negotiation auto
- crypto map cmap
- ```
 
  - The access list that defines traffic to be sent through the encrypted connection:
   ```
@@ -177,7 +170,16 @@ ip access-list extended tntazlist
  20 permit ip host 40.40.40.1 10.10.0.0 0.0.255.255
  ```
 
- Source NAT is implemented on the left-hand router router only.
+- The Crypto map is attached to the outside interface of the router:
+```
+interface GigabitEthernet1
+ ip address dhcp
+ ip nat outside
+ negotiation auto
+ crypto map cmap
+ ```
+
+Source NAT is implemented on the left-hand router router only.
  
 - Access list that defines which traffic is to be NAT'd
 ```
@@ -198,9 +200,9 @@ interface GigabitEthernet2
  ip nat inside
  negotiation auto
 ```
-Traffic received on the LAN interface is compared to the access-list. If it matches, the source address is replaced as defined in the NAT pool.
+Traffic received on the LAN interface is compared to the `snat-inside` access list. If it matches, the source address is replaced as defined in the NAT pool.
 
-The replaced source address then matches the access list attached to the crypto map, so it sent down the encrypted connection.
+The replaced source address then matches the access list attached to the crypto map, so it is sent down the encrypted connection.
 
 The right-hand router `c8k-10` is configured similarly, with following differences:
 - It does not contain the Source NAT configuration.
