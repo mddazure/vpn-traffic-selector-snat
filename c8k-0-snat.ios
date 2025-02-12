@@ -38,6 +38,7 @@ interface GigabitEthernet2
  ip address dhcp
  ip nat inside
  negotiation auto
+ no shutdown
 !
 ip http server
 ip http secure-server

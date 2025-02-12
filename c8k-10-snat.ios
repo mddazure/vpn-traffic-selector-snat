@@ -36,6 +36,7 @@ crypto map cmap 1 ipsec-isakmp
 interface GigabitEthernet2
  ip address dhcp
  negotiation auto
+ no shutdown
 !
 ip route 0.0.0.0 0.0.0.0 10.10.0.1
 ip route 10.10.2.0 255.255.255.0 GigabitEthernet2 10.10.1.1
