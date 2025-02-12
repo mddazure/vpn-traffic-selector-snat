@@ -6,7 +6,7 @@ These service providers will usually require their customers to Source NAT to - 
 
 Although VPN is an outdated and cumbersome method of connecting to a central service, it is still used in some application fields such as in financial services,  with government agencies, regulatory bodies, tax authorities etc. Customers have no other option than to comply if they want or need to use these provider's services.
 
-Azure customers will usually first attempt to use Azure-native VNET or VWAN VPN Gateways. These Gateways have NAT capabilities, but do ***not*** support NAT in combination with custom (policy-based) Traffic Selectors. When this combination is required, the only solution is to use a Network Virtual Appliance (NVA).
+Azure customers will usually first attempt to use Azure-native VNET or VWAN VPN Gateways. These Gateways have NAT capabilities and support custom (policy-based) Traffic Selectors, but do ***not*** support combining the two. When this combination is required, the only solution is to use a Network Virtual Appliance (NVA).
 
 See [Comparing Cisco VPN Technologies – Policy Based vs Route Based VPNs](https://www.firewall.cx/cisco/cisco-services-technologies/cisco-comparing-vpn-technologies.html) for an explanation of these concepts from Cisco's persective.
 
