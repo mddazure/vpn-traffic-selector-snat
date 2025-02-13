@@ -91,7 +91,7 @@ Retrieve the public ip's of both Cisco 8000V's:
   az network public-ip show --resource-group vpn-lab-rg --name c8k-0-pip --query ipAddress
   ```
 
-Open the file [c8k-0-snat.ios](/c8k-0-snat.ios) in a text editor.
+Open the file [c8k-0-snat.ios](templates/c8k-0-snat.ios) in a text editor.
 
 - Replace `[c8k-10-pip]` by the public ip address of `c8k-10`.
 
@@ -101,7 +101,7 @@ Open the file [c8k-0-snat.ios](/c8k-0-snat.ios) in a text editor.
   
 - Type `end` to exit Configuration mode, type `copy run start` and accept defaults to persist the running configuration.
 
-Open the file [c8k-10-snat.ios](/c8k-10-snat.ios) in a text editor.
+Open the file [c8k-10-snat.ios](templates/c8k-10-snat.ios) in a text editor.
 
 - Replace `[c8k-10-pip]` by the public ip address of `c8k-0`.
 
