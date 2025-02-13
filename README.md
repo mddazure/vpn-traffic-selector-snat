@@ -17,7 +17,7 @@ This article describes how use the Cisco Catalyst 8000V Edge Software in Azure t
 ## Lab
 The lab consists of two VNETs, each containing a VM and Cisco 8000V NVA. 
 
-![image](/vpn-traffic-selector-snat.png)
+![image](images/vpn-traffic-selector-snat.png)
 
 The left-hand VNET is the customer's environment, the right-hand VNET represents the service provider. 
 Service provider requires all traffic from the customer to be SNAT'd to 40.40.40.1. The service provider's destination systems are in the 10.10.0.0/16 range. Traffic direction is from customer to service provider only, i.e. the service provider will not need to connect to customer's systems.
