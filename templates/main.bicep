@@ -78,6 +78,26 @@ module customerVm 'vm.bicep' = {
     adminPassword: adminPassword
   }
 }
+module clientWeb1 'vm-web.bicep' = {
+  name: 'clientWeb1'
+  scope: rg
+  params: {
+    vmname: customerVmName
+    subnetId: customerVnet.outputs.vmSubnetId
+    adminUsername: adminUsername
+    adminPassword: adminPassword
+  }
+}
+module clientWeb2 'vm-web.bicep' = {
+  name: 'clientWeb2'
+  scope: rg
+  params: {
+    vmname: customerVmName
+    subnetId: customerVnet.outputs.vmSubnetId
+    adminUsername: adminUsername
+    adminPassword: adminPassword
+  }
+}
 module providerVm 'vm.bicep' = {
   name: 'providerVm'
   scope: rg

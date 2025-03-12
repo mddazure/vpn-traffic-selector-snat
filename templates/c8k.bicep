@@ -124,7 +124,7 @@ resource route2 'Microsoft.Network/routeTables/routes@2020-11-01' = if (udrName 
     ck8
   ]
   properties: {
-    addressPrefix: '40.40.40.1/32'
+    addressPrefix: '40.40.40.0/30'
           nextHopType: 'VirtualAppliance'
           nextHopIpAddress: insidenic.properties.ipConfigurations[0].properties.privateIPAddress
         }

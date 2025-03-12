@@ -1,4 +1,4 @@
-# VPN with Source NAT and Traffic Selector
+# VPN with Source NAT, Destination NAT and Traffic Selector
 
 Some providers of IT services require their customers to connect via VPN tunnels. 
 
@@ -112,6 +112,8 @@ Open the file [c8k-10-snat.ios](templates/c8k-10-snat.ios) in a text editor.
 - Type `end` to exit Configuration mode, type `copy run start` and accept defaults to persist the running configuration.
 
 #### Explanation
+
+#### Forward connectivity - Source NAT
 
 The configuration of the left-hand Cisco 8000V, `c8k-0`, consists of:
 
@@ -265,5 +267,52 @@ tcp  40.40.40.1:35150      10.0.2.4:35150        10.10.2.4:22          10.10.2.4
 Total number of translations: 2
 ```
 The Inside Local address is source address of `client-Vm`. This is translated to the Outside Local address, which is the source address seen by `provider-Vm`.
+
+#### Reverse connectivity - Destination NAT
+
+In a scenario where the Provider side needs to reach resources in the Client's environment, the Provider will target a public destination ip address at a specific destination port number. The Client-side router will then translate the public ip / port pair to a private destination ip / port at which the client resource is reachable. 
+
+![image](/images/vpn-traffic-selector-dnat.png)
+
+This scenario uses `40.40.40.2` for the reverse, inbound, flows. Traffic sent to this address on TCP port `86` must be forwarded to clientvM-W1 on `10.0.2.6:80`, traffic to port `87` must be forwarded to clientvM-W2 on `10.0.2.7:80`.
+
+This is achieved by adding the following configuration on `c8k-0`:
+
+```
+ip nat inside source static tcp 10.0.2.6 80 40.40.40.2 86 extendable
+ip nat inside source static tcp 10.0.2.7 80 40.40.40.2 87 extendable
+```
+The access list referenced by the crypto map (the Traffic Selector) on both routers must be modified to include the public ip address `40.40.40.2` that will be usd for the inbound connections:
+
+Add the following configuration on `c8k-0`:
+```
+ip access-list extended tntazlist
+      30 permit ip host 40.40.40.2 10.10.0.0 0.0.255.255
+```
+
+And on `c8k-10`:
+```
+ip access-list extended tntazlist
+      30 permit ip 10.10.0.0 0.0.255.255 host 40.40.40.2
+```
+
+#### Testing
+
+Log on to `provider-VM`.
+
+Type:
+```
+curl 40.40.40.2:86
+```
+should return `clientWeb1`.
+
+and
+```
+curl 40.40.40.2:87 
+```
+should return `clientWeb2`.
+
+
+
 
 
