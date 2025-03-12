@@ -64,6 +64,7 @@ resource iisext 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
   parent: vm
   // The parent property is used to specify the parent resource of the extension.
   name: 'iisext'
+  location: resourceGroup().location
   properties:{
     publisher: 'Microsoft.Compute'
     type: 'CustomScriptExtension'
