@@ -70,7 +70,6 @@ module outsideNsg 'nsg.bicep' = {
 module customerVm 'vm.bicep' = {
   name: 'customerVm'
   scope: rg
-
   params: {
     vmname: customerVmName
     subnetId: customerVnet.outputs.vmSubnetId
@@ -81,6 +80,9 @@ module customerVm 'vm.bicep' = {
 module clientWeb1 'vm-web.bicep' = {
   name: 'clientWeb1'
   scope: rg
+  dependsOn: [
+    customerVm
+  ]
   params: {
     vmname: customerVmName
     subnetId: customerVnet.outputs.vmSubnetId
@@ -91,6 +93,9 @@ module clientWeb1 'vm-web.bicep' = {
 module clientWeb2 'vm-web.bicep' = {
   name: 'clientWeb2'
   scope: rg
+  dependsOn: [
+    clientWeb1
+  ]
   params: {
     vmname: customerVmName
     subnetId: customerVnet.outputs.vmSubnetId
