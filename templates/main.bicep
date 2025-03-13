@@ -1,11 +1,13 @@
 param location string = 'swedencentral'
-param rgname string = 'vpn-lab-rg'
+param rgname string = 'vpn-lab-rg3'
 param customerVnetName string = 'client-Vnet'
 param customerVnetIPrange string = '10.0.0.0/16'
 param customerOutsideSubnetIPrange string = '10.0.0.0/24'
 param customerInsideSubnetIPrange string = '10.0.1.0/24'
 param customerVmSubnetIPrange string = '10.0.2.0/24'
 param customerVmName string = 'client-Vm'
+param clientWeb1Name string = 'client-Web1'
+param clientWeb2Name string = 'client-Web2'
 param customerC8kName string = 'c8k-0'
 param customerPipName string = 'c8k-0-pip'
 param providerVnetName string = 'provider-Vnet'
@@ -32,7 +34,6 @@ module prefix 'prefix.bicep' = {
   name: 'prefix'
   scope: rg
 }
-
 module customerVnet 'vnet.bicep' = {
   name: 'customerVnet'
   scope: rg
@@ -84,7 +85,7 @@ module clientWeb1 'vm-web.bicep' = {
     customerVm
   ]
   params: {
-    vmname: customerVmName
+    vmname: clientWeb1Name
     subnetId: customerVnet.outputs.vmSubnetId
     adminUsername: adminUsername
     adminPassword: adminPassword
@@ -97,7 +98,7 @@ module clientWeb2 'vm-web.bicep' = {
     clientWeb1
   ]
   params: {
-    vmname: customerVmName
+    vmname: clientWeb2Name
     subnetId: customerVnet.outputs.vmSubnetId
     adminUsername: adminUsername
     adminPassword: adminPassword

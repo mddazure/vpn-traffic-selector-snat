@@ -279,8 +279,8 @@ This scenario uses `40.40.40.2` for the reverse, inbound, flows. Traffic sent to
 This is achieved by adding the following configuration on `c8k-0`:
 
 ```
+ip nat inside source static tcp 10.0.2.5 80 40.40.40.2 85 extendable
 ip nat inside source static tcp 10.0.2.6 80 40.40.40.2 86 extendable
-ip nat inside source static tcp 10.0.2.7 80 40.40.40.2 87 extendable
 ```
 The access list referenced by the crypto map (the Traffic Selector) on both routers must be modified to include the public ip address `40.40.40.2` that will be usd for the inbound connections:
 
@@ -302,13 +302,13 @@ Log on to `provider-VM`.
 
 Type:
 ```
-curl 40.40.40.2:86
+curl 40.40.40.2:85
 ```
 should return `clientWeb1`.
 
 and
 ```
-curl 40.40.40.2:87 
+curl 40.40.40.2:86 
 ```
 should return `clientWeb2`.
 

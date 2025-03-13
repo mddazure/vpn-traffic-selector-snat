@@ -44,6 +44,7 @@ ip route 10.10.2.0 255.255.255.0 GigabitEthernet2 10.10.1.1
 ip access-list extended tntazlist
  10 permit ip 10.10.0.0 0.0.255.255 10.0.0.0 0.0.255.255
  20 permit ip 10.10.0.0 0.0.255.255 host 40.40.40.1
+ 30 permit ip 10.10.0.0 0.0.255.255 host 40.40.40.2
 !
 !
 interface GigabitEthernet1

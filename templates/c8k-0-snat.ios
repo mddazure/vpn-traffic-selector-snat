@@ -46,6 +46,8 @@ ip route 0.0.0.0 0.0.0.0 10.0.0.1
 ip route 10.0.2.0 255.255.255.0 GigabitEthernet2 10.0.1.1
 !
 ip nat pool snat-pool 40.40.40.1 40.40.40.1 prefix-length 30
+ip nat inside source static tcp 10.0.2.5 80 40.40.40.2 85 extendable
+ip nat inside source static tcp 10.0.2.6 80 40.40.40.2 86 extendable
 ip nat inside source list snat-inside pool snat-pool
 !
 ip access-list extended snat-inside
@@ -54,6 +56,7 @@ ip access-list extended snat-inside
 ip access-list extended tntazlist
  10 permit ip 10.0.0.0 0.0.255.255 10.10.0.0 0.0.255.255
  20 permit ip host 40.40.40.1 10.10.0.0 0.0.255.255
+ 30 permit ip host 40.40.40.2 10.10.0.0 0.0.255.255
 !
 !
 interface GigabitEthernet1

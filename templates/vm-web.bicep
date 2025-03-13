@@ -20,7 +20,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
     ]
   }
 }
-resource vm 'Microsoft.Compute/virtualMachines@2020-06-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2024-03-01' = {
   name: vmname
   location: resourceGroup().location
   properties: {
