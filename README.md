@@ -130,7 +130,7 @@ crypto ikev2 policy IKEv2-POLICY-TNTAZ
 !
 crypto ikev2 keyring IKEv2-KEYRING-TNTAZ
  peer TNTAZ
-  address 20.91.130.234
+  address <remote router pip>
   pre-shared-key abc123
 !
 crypto ikev2 profile IKEv2-PROFILE-TNTAZ
@@ -156,7 +156,7 @@ This is the same as in route-based VPN configurations.
 - A crypto map, which references an access list to identify which traffic needs to encrypted:
 ```
 crypto map cmap 1 ipsec-isakmp 
- set peer 20.91.130.234
+ set peer <remote router pip>
  set transform-set IPSEC-TRANSFORM-TNTAZ 
  set ikev2-profile IKEv2-PROFILE-TNTAZ
  match address tntazlist
